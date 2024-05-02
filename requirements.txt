@@ -4,4 +4,5 @@ Pillow
 numpy
 opencv-python
 tensorflow
+imageai --upgrade
 
