@@ -5,6 +5,9 @@ import cv2
 from detect import capture_screen
 import datetime
 
+# This is SOOOO Lazy but I'm just debugging anyways :P 
+coordinates = []
+
 def on_click(x, y, button, pressed):
     if pressed:
         coordinates.append((x, y))
@@ -26,8 +29,7 @@ def capture():
     print(f"Screenshot saved as {filename}")
 
 # Using PyAutoGUI All-Properly
-def calibrate():
-    coordinates = []
+def test_calibrate():
     listener = mouse.Listener(on_click=on_click)
     listener.start()
     listener.join()
@@ -39,6 +41,7 @@ def calibrate():
     # Calculate width and height of the rectangle
     width = x2 - x1
     height = y2 - y1
+    print(f"Width: {width}, Height: {height}")
 
     # Create 'screenshots' folder if it does not exist
     folder_path = "screenshots"
@@ -53,6 +56,30 @@ def calibrate():
 
     print(f"Screenshot of the area [{x1}, {y1}, {x2}, {y2}] saved as '{file_path}'")
 
+# You Click Twice, and it Returns the x1, y1, x2, y2 as a List 
+def calibrate():
+    coords = []
+    
+    def calibrate_onclick(x, y, button, pressed):
+        if pressed:
+            coords.append((x, y))
+            print(f"Mouse clicked at ({x}, {y})")
+            if len(coords) == 2:  # Stops listener after two clicks
+                return False
+    
+    listener = mouse.Listener(on_click=calibrate_onclick)
+    listener.start()
+    listener.join()
+    
+    x1, y1 = min(coords[0][0], coords[1][0]), min(coords[0][1], coords[1][1])   
+    x2, y2 = max(coords[0][0], coords[1][0]), max(coords[0][1], coords[1][1])   
+    
+    width = x2 - x1
+    height = y2 - y1
+    
+    return [x1, y1, width, height]
+
 #### TESTING CODE: 
 #capture()
-#calibrate()
+#test_calibrate()
+#print(calibrate())

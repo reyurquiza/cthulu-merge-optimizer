@@ -1,10 +1,11 @@
 import pyautogui
 import numpy as np
+import os
 import time
 from ultralytics import YOLO
 from detect import capture_screen
 import random
-
+from calibrate import calibrate
 
 MODEL = YOLO('runs/detect/train12/weights/best.pt')
 
@@ -96,12 +97,18 @@ def extract_features(game_screen):
 
 
 def main():
+    print("Calibrating... Click Corners Now")
+    screen = calibrate()
+    
+    # Creates a Screenshot Method called Capture
+    capture = lambda: pyautogui.screenshot(region=screen) 
+    
     print("Going to start now...")
     # pyautogui.click(random.randint(1000, 1520), random.randint(671, 700))
     try:
         while True:
             # Step 1: Capture Screen
-            image = capture_screen()
+            image = capture()
             # cv2.imshow('Test', image)
             # cv2.waitKey(0)
 
