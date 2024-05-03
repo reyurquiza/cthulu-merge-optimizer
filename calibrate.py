@@ -1,6 +1,9 @@
 from pynput import mouse
 import pyautogui
 import os
+import cv2
+from detect import capture_screen
+import datetime
 
 def on_click(x, y, button, pressed):
     if pressed:
@@ -9,27 +12,47 @@ def on_click(x, y, button, pressed):
         if len(coordinates) == 2:  # Stops listener after two clicks
             return False
 
-coordinates = []
-listener = mouse.Listener(on_click=on_click)
-listener.start()
-listener.join()
+# Trying out Capture_Screen
+def capture():
+    # Generate a timestamped filename for the screenshot
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"screenshot_{timestamp}.png"
+    
+    # Capture the screen using the capture_screen function from the detect module
+    screenshot = capture_screen()
+    
+    # Save the screenshot to a file
+    cv2.imwrite(filename, screenshot)
+    print(f"Screenshot saved as {filename}")
 
-# Calculate the top-left and bottom-right coordinates
-x1, y1 = min(coordinates[0][0], coordinates[1][0]), min(coordinates[0][1], coordinates[1][1])
-x2, y2 = max(coordinates[0][0], coordinates[1][0]), max(coordinates[0][1], coordinates[1][1])
+# Using PyAutoGUI All-Properly
+def calibrate():
+    coordinates = []
+    listener = mouse.Listener(on_click=on_click)
+    listener.start()
+    listener.join()
 
-# Calculate width and height of the rectangle
-width = x2 - x1
-height = y2 - y1
+    # Calculate the top-left and bottom-right coordinates
+    x1, y1 = min(coordinates[0][0], coordinates[1][0]), min(coordinates[0][1], coordinates[1][1])
+    x2, y2 = max(coordinates[0][0], coordinates[1][0]), max(coordinates[0][1], coordinates[1][1])
 
-# Create 'screenshots' folder if it does not exist
-folder_path = "screenshots"
-if not os.path.exists(folder_path):
-    os.makedirs(folder_path)
+    # Calculate width and height of the rectangle
+    width = x2 - x1
+    height = y2 - y1
 
-# Take a screenshot of the selected area
-screenshot = pyautogui.screenshot(region=(x1, y1, width, height))
-file_path = os.path.join(folder_path, "selected_area_screenshot.png")
-screenshot.save(file_path)
+    # Create 'screenshots' folder if it does not exist
+    folder_path = "screenshots"
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
 
-print(f"Screenshot of the area [{x1}, {y1}, {x2}, {y2}] saved as '{file_path}'")
+    # Take a screenshot of the selected area
+
+    screenshot = pyautogui.screenshot(region=(x1, y1, width, height))
+    file_path = os.path.join(folder_path, "selected_area_screenshot.png")
+    screenshot.save(file_path)
+
+    print(f"Screenshot of the area [{x1}, {y1}, {x2}, {y2}] saved as '{file_path}'")
+
+#### TESTING CODE: 
+#capture()
+#calibrate()

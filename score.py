@@ -7,14 +7,16 @@ import numpy as np
 CSV_PATH = 'dataset/gameStates/scores.csv'
 
 # Get the Score using PyTesseract 
-def get_score(image_path):
-    image = cv2.imread(image_path)
-    if image is None:
+def get_score(path):
+    # Load the Image
+    img = cv2.imread(path)
+        
+    if img is None:
         raise ValueError("Could not load the image. Check the file path.")
     
     # Crop to get only the top-left corner
-    img = image[100:250, :300]
-    img = cv2.resize(img, (300, 150))
+    img = img[100:250, :300]
+    img = cv2.resize(img, (300, 350))
 
     #  Preprocessing: 
         # Grayscale -> Thresholding -> Sharpening -> Erosion -> Dilation -> Gaussian Blur
@@ -26,9 +28,9 @@ def get_score(image_path):
     img = cv2.GaussianBlur(img, (5, 5), 0)
     
     # Display the Image (DEBUGGING PURPOSES)
-    # cv2.imshow('image', img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    cv2.imshow('image', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
     # Debugging w/ PyTesseract Checking
     score = pytesseract.image_to_string(img, config='--psm 6 --oem 3 outputbase digits')
@@ -60,4 +62,5 @@ def compare_scores(csv_path):
             print(f"Image: {image_name}, Actual Score: {score}, Detected Score: {detected_score}")
 
 # Testing Code
+print(get_score('screenshots/selected_area_screenshot.png'))
 compare_scores(CSV_PATH)
