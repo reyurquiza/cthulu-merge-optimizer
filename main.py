@@ -4,8 +4,9 @@ import time
 from ultralytics import YOLO
 from detect import capture_screen
 import random
-from calibrate import calibrate
+from pynput.mouse import Button, Controller
 
+mouse = Controller()
 
 MODEL = YOLO('runs/detect/train12/weights/best.pt')
 
@@ -21,21 +22,13 @@ icon_levels = {
     8: 'Cthulu'
 }
 
-def dumb_clicker(x, y):
-    pyautogui.moveTo(x, y)
-    time.sleep(.1)
-    pyautogui.dragTo(button='left')
-    pyautogui.click(clicks=2)
-
 # replace with with a reinforcement learning neural network
 def act_on_detections(results_obj):
     if not results_obj[0].boxes:
-        dumb_clicker(random.randint(1000, 1520), random.randint(671, 700))
-        # pyautogui.moveTo(random.randint(1000, 1520), random.randint(671, 700))
-        # time.sleep(.1)
-        # pyautogui.dragTo(button='left')
-        # pyautogui.click(clicks=2)
-        
+        pyautogui.moveTo(random.randint(1000, 1520), random.randint(671, 700))
+        time.sleep(.1)
+        pyautogui.dragTo(button='left')
+
     boxes = []
     names = []
     probs = []
@@ -62,7 +55,7 @@ def act_on_detections(results_obj):
             # This means its the upcoming icon so we dont want to click on it
             upcoming_icon = name
             upcoming_box = box.xyxy[0]
-            print(f"Upcoming icon: {icon_levels.get(upcoming_icon)}")
+            # print(f"Upcoming icon: {icon_levels.get(upcoming_icon)}")
             highest_prob = prob
             break
 
@@ -77,22 +70,22 @@ def act_on_detections(results_obj):
             continue
 
         x1, y1, x2, y2 = box.xyxy[0]
-        print("Checking: ", icon_levels.get(name))
+        # print("Checking: ", icon_levels.get(name))
         if name == upcoming_icon:
             print(f"{icon_levels.get(name)} has been found at [{x1, y1, x2, y2}]!")
             center_x = (x1 + x2 + 1300) / 2
             center_y = (y1 + y2 + 600) / 2
 
-            dumb_clicker(center_x, center_y)
-            # pyautogui.click(center_x, center_y)
-            # pyautogui.click(clicks=2)
+            pyautogui.moveTo(center_x, center_y)
+            time.sleep(.1)
+            pyautogui.dragTo(button='left')
                 
             print(f"Clicked on {icon_levels.get(name)} at [{center_x}, {center_y}]")
             return
     # If no matching shapes in current game state click random
-    dumb_clicker(random.randint(1000, 1520), random.randint(671, 700))
-    # pyautogui.click(random.randint(1000, 1520), random.randint(671, 700))
-    # pyautogui.click(clicks=2)
+    pyautogui.moveTo(random.randint(1000, 1520), random.randint(671, 700))
+    time.sleep(.1)
+    pyautogui.dragTo(button='left')
     print("No matches found, Im feeling lucky!")
 
 
@@ -108,18 +101,12 @@ def extract_features(game_screen):
 
 
 def main():
-    print("Calibrating... Click Corners Now")
-    screen = calibrate()
-    
-    # Creates a Screenshot Method called Capture
-    capture = lambda: pyautogui.screenshot(region=screen) 
-    
     print("Going to start now...")
     # pyautogui.click(random.randint(1000, 1520), random.randint(671, 700))
     try:
         while True:
             # Step 1: Capture Screen
-            image = capture()
+            image = capture_screen()
             # cv2.imshow('Test', image)
             # cv2.waitKey(0)
 
