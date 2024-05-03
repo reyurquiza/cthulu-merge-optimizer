@@ -1,5 +1,5 @@
 from ultralytics import YOLO
-# from roboflow import Roboflow
+from roboflow import Roboflow
 
 if __name__ == "__main__":  # this is crucial
     model = YOLO('runs/detect/train12/weights/best.pt') # yolov8n.pt

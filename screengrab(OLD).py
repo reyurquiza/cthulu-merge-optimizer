@@ -1,20 +1,23 @@
 import pyautogui
+import keras
 import cv2
 import numpy as np
 from PIL import Image
 
-x1, y1, x2, y2 = (628, 292, 951, 551)
+MODEL = keras.saving.load_model('CNN_model.keras')
 
-def capture_screen():
+
+def process_screenshot(x1, y1, x2, y2):
+    # Take a screenshot of the specified area
+    # now = datetime.datetime.now()
+    # time_string = now.strftime("%Y-%m-%d_%H-%M-%S")
     image = pyautogui.screenshot(region=(x1, y1, x2, y2))
 
-    img_np = np.array(image)
-    img_np = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
-
-    return img_np
+    # image.save('screenshot_{}.png'.format(time_string))
 
     img = image.resize((image.width * 2, image.height * 2), Image.BILINEAR)
 
+    # Convert the image to a format that OpenCV can work with
     # PIL image to numpy array
     img_np = np.array(img)
     
@@ -42,3 +45,10 @@ def capture_screen():
     cv2.imshow('Grayscale Image', gray_img)
     cv2.imshow('Threshold Image', threshold_img)
     cv2.imshow('Contours Image', contour_img)
+
+    boxes, scores, classes = MODEL.predict(img_np)
+
+
+
+process_screenshot(50, 50, 100, 100)
+
