@@ -103,11 +103,13 @@ def extract_features(game_screen):
 def main():
     print("Going to start now...")
     # pyautogui.click(random.randint(1000, 1520), random.randint(671, 700))
+    screen = calibrate()
+    time.sleep(1)
+            
+    
     try:
         while True:
             # Step 1: Capture Screen
-            screen = calibrate()
-            time.sleep(1)
             image = pyautogui.screenshot(region=screen)
             # cv2.imshow('Test', image)
             # cv2.waitKey(0)

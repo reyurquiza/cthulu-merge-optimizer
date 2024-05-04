@@ -5,12 +5,7 @@ import cv2
 from detect import capture_screen
 import datetime
 
-def on_click(x, y, button, pressed):
-    if pressed:
-        coordinates.append((x, y))
-        print(f"Mouse clicked at ({x}, {y})")
-        if len(coordinates) == 2:  # Stops listener after two clicks
-            return False
+
 
 # Trying out Capture_Screen
 def capture():
@@ -59,8 +54,18 @@ def test_calibrate():
 
 # Gets Two Clicks- Returns the Coordinates [x1, y1, width, height]
 def calibrate():
-    print('Calibrating... Click Corners of the Game Window')
+    
     coordinates = []
+    
+    def on_click(x, y, button, pressed):
+        if pressed:
+            coordinates.append((x, y))
+            print(f"Mouse clicked at ({x}, {y})")
+            if len(coordinates) == 2:  # Stops listener after two clicks
+                return False
+        
+    print('Calibrating... Click Corners of the Game Window')
+    
     listener = mouse.Listener(on_click=on_click)
     listener.start()
     listener.join()
