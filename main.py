@@ -5,6 +5,7 @@ from ultralytics import YOLO
 from detect import capture_screen
 import random
 from pynput.mouse import Button, Controller
+from calibrate import calibrate
 
 mouse = Controller()
 
@@ -62,7 +63,6 @@ def act_on_detections(results_obj):
 
     if upcoming_icon is None:
         print("No upcoming icon detected.")
-        return
         
     for box, name in zip(boxes, names):
         # Make sure not to click on the 'upcoming' box
@@ -106,7 +106,9 @@ def main():
     try:
         while True:
             # Step 1: Capture Screen
-            image = capture_screen()
+            screen = calibrate()
+            time.sleep(1)
+            image = pyautogui.screenshot(region=screen)
             # cv2.imshow('Test', image)
             # cv2.waitKey(0)
 

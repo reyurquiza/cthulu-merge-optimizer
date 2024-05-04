@@ -26,7 +26,7 @@ def capture():
     print(f"Screenshot saved as {filename}")
 
 # Using PyAutoGUI All-Properly
-def calibrate():
+def test_calibrate():
     coordinates = []
     listener = mouse.Listener(on_click=on_click)
     listener.start()
@@ -56,3 +56,21 @@ def calibrate():
 #### TESTING CODE: 
 #capture()
 #calibrate()
+
+# Gets Two Clicks- Returns the Coordinates [x1, y1, width, height]
+def calibrate():
+    print('Calibrating... Click Corners of the Game Window')
+    coordinates = []
+    listener = mouse.Listener(on_click=on_click)
+    listener.start()
+    listener.join()
+
+    # Calculate the top-left and bottom-right coordinates
+    x1, y1 = min(coordinates[0][0], coordinates[1][0]), min(coordinates[0][1], coordinates[1][1])
+    x2, y2 = max(coordinates[0][0], coordinates[1][0]), max(coordinates[0][1], coordinates[1][1])
+
+    # Calculate width and height of the rectangle
+    width = x2 - x1
+    height = y2 - y1
+
+    return x1, y1, width, height
