@@ -8,6 +8,7 @@ from pynput.mouse import Button, Controller
 from calibrate import calibrate
 
 mouse = Controller()
+screen_width, screen_height = pyautogui.size()    
 
 MODEL = YOLO('runs/detect/train12/weights/best.pt')
 
@@ -26,15 +27,15 @@ icon_levels = {
 # Clicks the Screen at Coords x, y
 def dumb_clicker(x,y):
     pyautogui.moveTo(x, y)
-    time.sleep(.1)
-    for idx in range (1,11):
+    time.sleep(.3)
+    for idx in range (1,13):
         pyautogui.dragTo(button='left')
-        print(idx)
+        # print(idx)
 
 # replace with with a reinforcement learning neural network
 def act_on_detections(results_obj):
     if not results_obj[0].boxes:
-        dumb_clicker(random.randint(1000, 1520), random.randint(671, 700))
+        dumb_clicker(random.randint(int(screen_width/3), int(2*screen_width/3)), random.randint(671, 700))
 
     boxes = []
     names = []
@@ -88,7 +89,7 @@ def act_on_detections(results_obj):
             return
         
     # If no matching shapes in current game state click random
-    dumb_clicker(random.randint(1000, 1520), random.randint(671, 700))
+    dumb_clicker(random.randint(int(screen_width/3), int(2*screen_width/3)), random.randint(671, 700))
     print("No matches found, Im feeling lucky!")
     
 
@@ -108,8 +109,7 @@ def main():
     print("Going to start now...")
     # pyautogui.click(random.randint(1000, 1520), random.randint(671, 700))
     screen = calibrate()
-    time.sleep(1)
-            
+    time.sleep(1)    
     
     try:
         while True:
@@ -128,7 +128,7 @@ def main():
             act_on_detections(results)
 
             # Depends for performance
-            time.sleep(5)
+            time.sleep(3)
     except KeyboardInterrupt:
         print("Stopped by user.")
 
