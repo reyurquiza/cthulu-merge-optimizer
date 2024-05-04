@@ -23,12 +23,18 @@ icon_levels = {
     8: 'Cthulu'
 }
 
+# Clicks the Screen at Coords x, y
+def dumb_clicker(x,y):
+    pyautogui.moveTo(x, y)
+    time.sleep(.1)
+    for idx in range (1,11):
+        pyautogui.dragTo(button='left')
+        print(idx)
+
 # replace with with a reinforcement learning neural network
 def act_on_detections(results_obj):
     if not results_obj[0].boxes:
-        pyautogui.moveTo(random.randint(1000, 1520), random.randint(671, 700))
-        time.sleep(.1)
-        pyautogui.dragTo(button='left')
+        dumb_clicker(random.randint(1000, 1520), random.randint(671, 700))
 
     boxes = []
     names = []
@@ -76,17 +82,15 @@ def act_on_detections(results_obj):
             center_x = (x1 + x2 + 1300) / 2
             center_y = (y1 + y2 + 600) / 2
 
-            pyautogui.moveTo(center_x, center_y)
-            time.sleep(.1)
-            pyautogui.dragTo(button='left')
+            dumb_clicker(center_x, center_y)
                 
             print(f"Clicked on {icon_levels.get(name)} at [{center_x}, {center_y}]")
             return
+        
     # If no matching shapes in current game state click random
-    pyautogui.moveTo(random.randint(1000, 1520), random.randint(671, 700))
-    time.sleep(.1)
-    pyautogui.dragTo(button='left')
+    dumb_clicker(random.randint(1000, 1520), random.randint(671, 700))
     print("No matches found, Im feeling lucky!")
+    
 
 
 def extract_features(game_screen):
