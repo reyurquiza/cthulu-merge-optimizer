@@ -75,10 +75,10 @@ def is_available(rect1, list1):
                 x2, y2, w2, h2 = rect2
                 
                 # Debugging
-                # print(f'does {rect2} overlap {rect1}?')
+                print(f'does {rect2} overlap {rect1}?')
                     
                 # Check if the bottom edge of rect1 is above the top edge of rect2
-                if (y1-h1/2) <= (y2-h2/2) and abs((x2-w2/2)-(x1-w1/2)) < h1:
+                if (y1+h1/2) <= (y2-h2/2) and abs((x2-w2/2)-(x1-w1/2)) < h1:
                     return False
         
     return True
