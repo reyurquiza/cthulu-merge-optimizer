@@ -103,7 +103,11 @@ def dumb_clicker(x,y):
         pyautogui.dragTo(button='left')
         # print(idx)
 
-# replace with with a reinforcement learning neural network
+# DOES THE FOLLOWING: 
+    # Checks for pieces that match the upcoming piece
+    # Checks if those pieces have animals above them
+    # If they don't, then click on them
+    # Otherwise, click on a random piece
 def act_on_detections(results_obj, cs_diff):
     
     if not results_obj[0].boxes:
@@ -191,6 +195,7 @@ def act_on_detections(results_obj, cs_diff):
     dumb_clicker(random.randint(int(screen_width/3), int(2*screen_width/3)), random.randint(671, 700))
     print("\n\n~~No matches found, Im feeling lucky!~~\n\n")
     
+# Feature Extraction of Screenshot
 def extract_features(game_screen):
     results = MODEL(game_screen)
     features = []
@@ -201,6 +206,7 @@ def extract_features(game_screen):
         # features.append([level, normal_x, normal_y])
     return features
 
+# The Whole Thing!
 def main():
     print("Going to start now...")
     # pyautogui.click(random.randint(1000, 1520), random.randint(671, 700))
