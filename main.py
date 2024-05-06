@@ -108,7 +108,7 @@ def dumb_clicker(x,y):
     pyautogui.moveTo(x, y)
     time.sleep(.3)
     # 2 works better for mac, 10 for other
-    for idx in range (1,2):
+    for idx in range (1,9):
         pyautogui.dragTo(button='left')
         # print(idx)
 
