@@ -71,8 +71,9 @@ def calibrate():
     listener.join()
 
     # Calculate the top-left and bottom-right coordinates
-    x1, y1 = min(coordinates[0][0], coordinates[1][0]), min(coordinates[0][1], coordinates[1][1])
-    x2, y2 = max(coordinates[0][0], coordinates[1][0]), max(coordinates[0][1], coordinates[1][1])
+    # Rey - had to turn the coords to ints because math with floats didnt work
+    x1, y1 = int(min(coordinates[0][0], coordinates[1][0])), int(min(coordinates[0][1], coordinates[1][1]))
+    x2, y2 = int(max(coordinates[0][0], coordinates[1][0])), int(max(coordinates[0][1], coordinates[1][1]))
 
     # Calculate width and height of the rectangle
     width = x2 - x1

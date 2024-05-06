@@ -47,6 +47,14 @@ flatten = lambda lst: [item for sublist in lst for item in sublist]
 # Floats to Int
 to_ints = lambda items: [to_ints(item) if isinstance(item, list) else int(item) for item in items]
 
+# Returns the icon that is exactly one higher of the passed in icon or None if not found
+def find_higher_rank_icon(current_rank):
+    # Finding the icon with the next higher rank
+    for icon, rank in icon_values.items():
+        if rank == current_rank + 1:
+            return icon
+    return None  # No higher rank icon found
+
 # Returns True of Two Coords [x,y,w,h] Overlap 
 def do_rectangles_overlap(rect1, rect2):
     # Extract the position and dimensions for both rectangles
@@ -75,7 +83,7 @@ def is_available(rect1, list1):
                 x2, y2, w2, h2 = rect2
                 
                 # Debugging
-                print(f'does {rect2} overlap {rect1}?')
+                # print(f'does {rect2} overlap {rect1}?')
                     
                 # Check if the bottom edge of rect1 is above the top edge of rect2
                 if y1 >= y2 and abs(x1-x2) < h1:
@@ -99,7 +107,8 @@ def remove_min_x_element(z, x_list, y_list, w_list):
 def dumb_clicker(x,y):
     pyautogui.moveTo(x, y)
     time.sleep(.3)
-    for idx in range (1,10):
+    # 2 works better for mac, 10 for other
+    for idx in range (1,2):
         pyautogui.dragTo(button='left')
         # print(idx)
 
@@ -122,9 +131,13 @@ def act_on_detections(results_obj, cs_diff):
         names= to_ints((result.boxes.cls.numpy()).tolist()[:])  # Keypoints object for pose outputs
         probs = to_ints((result.boxes.conf.numpy()).tolist())  # Probs object for classification outputs
        
-    upcoming_icon = None
-    highest_prob = 0
+    upcoming_value = None
+    upcoming_prob = 0
     upcoming_box = None
+
+    # Debugging
+    # for box, name in zip(boxes, names):
+        # print(f"{icon_levels.get(name)}: {box}")
     
     # Finding the Upcoming Box 
     for box, name, prob in zip(boxes, names, probs):
@@ -133,18 +146,19 @@ def act_on_detections(results_obj, cs_diff):
         coords = box
         
         # Figures out if the Box is Off Board
-        off_board = int(coords[0]) < int(screen_width/4)
+        off_board = int(coords[0]) < int(screen_width/8)
         
         # # Debugging
+        # print("-------------------------------------")
         # print('Coords:', coords)
         # print('Name:', icon_levels.get(name))
-        # print(f"{int(coords[0])} < {int(screen_width/4)}? {off_board}")
+        # print(f"{int(coords[0])} < {int(screen_width/8)}? {off_board}")
         
         # Finding the Minimum Item
         if off_board:
             
             # This means its the upcoming icon so we dont want to click on it
-            upcoming_icon = name
+            upcoming_value = name
             upcoming_box = coords
             
             # Removes it from the Collection
@@ -152,15 +166,15 @@ def act_on_detections(results_obj, cs_diff):
             names.remove(name)
             probs.remove(prob)
             
-            # print(f"Upcoming icon: {icon_levels.get(upcoming_icon)}")
-            highest_prob = prob
-            
+            # print(f"Upcoming icon: {icon_levels.get(upcoming_value)}")
+            upcoming_prob = prob
             break
     
     # Debugging
     # print("Boxes:\n", boxes)
     # print("Names:\n", names)
-    print(f'Upcoming Item is: {icon_levels.get(upcoming_icon)} ({upcoming_icon})\n')
+    upcoming_string = icon_levels.get(upcoming_value)
+    print(f'Upcoming Item is: {upcoming_string} ({upcoming_value})\n')
         
     # Our Best Option
     best_var = 0
@@ -170,15 +184,34 @@ def act_on_detections(results_obj, cs_diff):
     # Finding the Best Chain (Boolean Logic)
     ####### We May Want to Change This to Reinforcement Learning
 
+    current_rank = icon_values.get(upcoming_value)
+    if current_rank is not None:
+        higher_rank_icon = find_higher_rank_icon(current_rank)
+
+    # Finding the rank above upcoming
+    if higher_rank_icon is not None:
+        for higher_box, higher_name in zip(boxes, names):
+            if higher_name == higher_rank_icon and is_available(higher_box, boxes):
+                print(f"\n\n[{upcoming_string}]: The rank above [{icon_levels.get(upcoming_value)}], which is [{icon_levels.get(higher_name)}], is available at [{higher_box}]]")
+
+                # Calculate pos for dropping
+                higher_center_x = higher_box[0] - higher_box[2]/4 + cs_diff[0]
+                higher_center_y = higher_box[1] - higher_box[3]/4 + cs_diff[1]
+
+                dumb_clicker(higher_center_x, higher_center_y)
+
+                print(f"[{upcoming_string}]: Dropped [{icon_levels.get(upcoming_value)}] on [{icon_levels.get(higher_name)}] at [{higher_center_x}, {higher_center_y}]")
+                return
+                # end higher check
+    print(f"[{upcoming_string}]: [{icon_levels.get(higher_rank_icon)}] is not available, will try to find a match instead.\n\n")
+
     # Finding the Same Animal
     for box, name in zip(boxes, names):
-        
         # box = flatten(box)
-        if name == upcoming_icon:
-            
+        if name == upcoming_value:
             # If there is Anything Above the Animal
             if is_available(box, boxes):
-                print(f"{icon_levels.get(name)} has been found at [{box}]!")
+                print(f"\n\n[{upcoming_string}]: {icon_levels.get(name)} has been found at [{box}]!")
     
                 # Ratio Between Screenshot and Screen Size
                 center_x = box[0] - box[2]/4 + cs_diff[0]
@@ -186,30 +219,19 @@ def act_on_detections(results_obj, cs_diff):
 
                 dumb_clicker(center_x, center_y)
                     
-                print(f"Clicked on {icon_levels.get(name)} at [{center_x}, {center_y}]\n\n")
+                print(f"[{upcoming_string}]: Clicked on {icon_levels.get(name)} at [{center_x}, {center_y}]\n\n")
                 return
             else: 
-                print('Not Available-')   
+                print(f'[{upcoming_string}]: Not Available!')  
         
-    # If We Find Nothing? We Guess 
-    dumb_clicker(random.randint(int(screen_width/3), int(2*screen_width/3)), random.randint(671, 700))
+    # If We Find Nothing? We Guess
     print("\n\n~~No matches found, Im feeling lucky!~~\n\n")
+    dumb_clicker(random.randint(int(screen_width/3), int(2*screen_width/3)), random.randint(671, 700))
+    return
     
-# Feature Extraction of Screenshot
-def extract_features(game_screen):
-    results = MODEL(game_screen)
-    features = []
-    for result in results:
-        level = icon_levels.get(result['type'], 0)
-        # normal_x = normalize_position(result['x'], game_screen.width)
-        # normal_y = normalize_position(result['y'], game_screen.height)
-        # features.append([level, normal_x, normal_y])
-    return features
-
 # The Whole Thing!
 def main():
     print("Going to start now...")
-    # pyautogui.click(random.randint(1000, 1520), random.randint(671, 700))
     screen = calibrate()
     
     # Capture-Screen Ratio
