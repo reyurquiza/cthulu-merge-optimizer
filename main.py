@@ -180,6 +180,7 @@ def act_on_detections(results_obj, cs_diff):
     best_var = 0
     best_box = None
     best_name = None
+    higher_rank_icon = None
         
     # Finding the Best Chain (Boolean Logic)
     ####### We May Want to Change This to Reinforcement Learning
@@ -187,23 +188,6 @@ def act_on_detections(results_obj, cs_diff):
     current_rank = icon_values.get(upcoming_value)
     if current_rank is not None:
         higher_rank_icon = find_higher_rank_icon(current_rank)
-
-    # Finding the rank above upcoming
-    if higher_rank_icon is not None:
-        for higher_box, higher_name in zip(boxes, names):
-            if higher_name == higher_rank_icon and is_available(higher_box, boxes):
-                print(f"\n\n[{upcoming_string}]: The rank above [{icon_levels.get(upcoming_value)}], which is [{icon_levels.get(higher_name)}], is available at [{higher_box}]]")
-
-                # Calculate pos for dropping
-                higher_center_x = higher_box[0] - higher_box[2]/4 + cs_diff[0]
-                higher_center_y = higher_box[1] - higher_box[3]/4 + cs_diff[1]
-
-                dumb_clicker(higher_center_x, higher_center_y)
-
-                print(f"[{upcoming_string}]: Dropped [{icon_levels.get(upcoming_value)}] on [{icon_levels.get(higher_name)}] at [{higher_center_x}, {higher_center_y}]")
-                return
-                # end higher check
-    print(f"[{upcoming_string}]: [{icon_levels.get(higher_rank_icon)}] is not available, will try to find a match instead.\n\n")
 
     # Finding the Same Animal
     for box, name in zip(boxes, names):
@@ -223,7 +207,24 @@ def act_on_detections(results_obj, cs_diff):
                 return
             else: 
                 print(f'[{upcoming_string}]: Not Available!')  
-        
+    
+    # Finding the rank above upcoming
+    if higher_rank_icon is not None:
+        for higher_box, higher_name in zip(boxes, names):
+            if higher_name == higher_rank_icon and is_available(higher_box, boxes):
+                print(f"\n\n[{upcoming_string}]: The rank above [{icon_levels.get(upcoming_value)}], which is [{icon_levels.get(higher_name)}], is available at [{higher_box}]]")
+
+                # Calculate pos for dropping
+                higher_center_x = higher_box[0] - higher_box[2]/4 + cs_diff[0]
+                higher_center_y = higher_box[1] - higher_box[3]/4 + cs_diff[1]
+
+                dumb_clicker(higher_center_x, higher_center_y)
+
+                print(f"[{upcoming_string}]: Dropped [{icon_levels.get(upcoming_value)}] on [{icon_levels.get(higher_name)}] at [{higher_center_x}, {higher_center_y}]")
+                return
+                # end higher check
+    print(f"[{upcoming_string}]: [{icon_levels.get(higher_rank_icon)}] is not available, will guess randomly instead.\n\n")
+    
     # If We Find Nothing? We Guess
     print("\n\n~~No matches found, Im feeling lucky!~~\n\n")
     dumb_clicker(random.randint(int(screen_width/3), int(2*screen_width/3)), random.randint(671, 700))
