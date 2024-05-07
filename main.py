@@ -116,7 +116,8 @@ def dumb_clicker(x,y):
     # Checks for pieces that match the upcoming piece
     # Checks if those pieces have animals above them
     # If they don't, then click on them
-    # Otherwise, click on a random piece
+    # Otherwise, click on a piece that is one-greater 
+    # If that piece isn't avaialble, then click randomly
 def act_on_detections(results_obj, cs_diff):
     
     if not results_obj[0].boxes:
