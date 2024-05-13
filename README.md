@@ -16,7 +16,6 @@
 
 This machine learning implementation project looks into the usage of a convolutional neural network, specifically YOLOv8, in a real-time gaming environment to improve decision-making processes. The purpose was to employ YOLOv8 for dynamic object detection in the game Cthulhu Merge, which involved processing visual input to influence game strategy. The application takes screenshots at regular intervals, uses the CNN to detect and classify game elements, then follows a predetermined logic to make the best move. Our findings indicate that employing YOLOv8 significantly improves the accuracy and speed of object recognition in the gaming environment, allowing for more strategic and responsive gameplay. This successfully tackles concerns with real-time data processing and game interaction, resulting in significant performance improvements.
 
------
 ## Deployment Instructions: 
 
 ### Developing a New Model
@@ -29,7 +28,6 @@ This machine learning implementation project looks into the usage of a convoluti
 3. Ensure that the Entire Game Window is Visible 
 4. You may want to reset the game-board by pressing X 
 
------
 ## Steps to Run:
 1. In any terminal, run the provided `main.py` file.
 2. You will be prompted to Calibrate the corners of the Game Window:
