@@ -13,7 +13,8 @@ mouse = Controller()
 screen_width, screen_height = pyautogui.size()   
 
 # AI Model Setup
-MODEL = YOLO('runs/detect/train12/weights/best.pt')
+model_path = 'runs/detect/train12/weights/best.pt'
+MODEL = YOLO(model_path)
 
 # Deriving Names of Animals
 icon_levels = {
